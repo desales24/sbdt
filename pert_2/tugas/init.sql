@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS pelanggan (
+    id SERIAL PRIMARY KEY,
+    nama_pelanggan VARCHAR(100) NOT NULL,
+    kota VARCHAR(50) NOT NULL
+);

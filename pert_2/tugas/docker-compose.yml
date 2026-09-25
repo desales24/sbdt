@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  node_jakarta:
+    image: postgres:16-alpine
+    container_name: node_jakarta
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: penjualan
+    ports:
+      - "5432:5432"
+    volumes:
+      - jakarta_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - db_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  node_bandung:
+    image: postgres:16-alpine
+    container_name: node_bandung
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: penjualan
+    ports:
+      - "5433:5432"
+    volumes:
+      - bandung_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - db_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  node_surabaya:
+    image: postgres:16-alpine
+    container_name: node_surabaya
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: penjualan
+    ports:
+      - "5434:5432"
+    volumes:
+      - surabaya_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - db_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - node_jakarta
+      - node_bandung
+      - node_surabaya
+    networks:
+      - db_network
+
+volumes:
+  jakarta_data:
+  bandung_data:
+  surabaya_data:
+
+networks:
+  db_network:
+    driver: bridge
